@@ -1,26 +1,32 @@
 import nodeMailer from 'nodemailer'
-
-const sendMail = async (email:string,subject:string,text:string)=> {
+import config from './config';
+const sendMail = async (email:string,subject:string,link:string)=> {
     try {
         const transporter = nodeMailer.createTransport({
-            host:process.env.HOST,
-            port:587,
-            secure:true,
-            auth:{
-                user:process.env.USER,
-                pass:process.env.PASS,
+            host: config.HOST,
+            port: 2525,
+            auth: {
+              user:config.USER_NAME,
+              pass: config.USER_PASS
             },
+          
         });
+       const mailOptions = {
+        from:config.SENDER_EMAIL!,
+        to: email,
+        subject: subject,
+        html: `
+              <h3>Password Reset Request</h3>
+              <p>You request a password reset. Click the link below to reset your password:</p>
+              <a href="${link}">Reset Password</a>
+              <p>If you didn't request this, please ignore this email.</p>
+        `
+       };
 
-        await transporter.sendMail({
-            from:process.env.USER,
-            to:email,
-            subject:subject,
-            text:text,
-        });
-        console.log("email sent successfully")
+     await transporter.sendMail(mailOptions);
+        console.log("Your email has been sent successfully")
     } catch (error) {
-        console.log(error, "email not sent");
+        console.error(error, "email not sent");
     }
 }
 

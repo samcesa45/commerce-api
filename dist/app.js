@@ -12,6 +12,8 @@ const logger_1 = __importDefault(require("./utils/logger"));
 const config_1 = __importDefault(require("./utils/config"));
 const signup_1 = __importDefault(require("./controllers/users/signup"));
 const login_1 = __importDefault(require("./controllers/users/login"));
+const requestPasswordReset_1 = __importDefault(require("./controllers/users/requestPasswordReset"));
+const middleware_1 = __importDefault(require("./utils/middleware"));
 mongoose_1.default.set('strictQuery', false);
 logger_1.default.info('connecting to', config_1.default.MONGODB_URI);
 mongoose_1.default
@@ -25,6 +27,10 @@ mongoose_1.default
 app.use((0, cors_1.default)());
 app.use(express_1.default.static('dist'));
 app.use(express_1.default.json());
+app.use(middleware_1.default.requestLogger);
 app.use("/api/signup", signup_1.default);
 app.use('/api/login', login_1.default);
+app.use('/api/request-reset', requestPasswordReset_1.default);
+app.use(middleware_1.default.unknownEndpoint);
+// app.use(middleware.errorHandler);
 exports.default = app;

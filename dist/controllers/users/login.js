@@ -22,7 +22,7 @@ loginRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { email, password } = req.body;
     const user = yield user_1.default.findOne({ email });
     if (!user) {
-        return res.status(401).json({ error: 'user not found' });
+        return res.status(401).json({ error: 'User not found' });
     }
     const passwordCorrect = yield bcrypt_1.default.compare(password, user.passwordHash);
     if (!passwordCorrect) {
@@ -32,10 +32,9 @@ loginRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* 
         email: user.email,
         id: user._id,
     };
-    //token expires in 60 * 60 seconds, that is, in one hour
     const token = jsonwebtoken_1.default.sign(userToken, process.env.SECRET, {
         expiresIn: TOKEN_EXPIRY,
     });
-    res.status(200).send({ token, email: user.email });
+    res.status(200).json({ token, email: user.email, message: 'Login successful' });
 }));
 exports.default = loginRouter;

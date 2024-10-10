@@ -7,6 +7,8 @@ import logger from './utils/logger'
 import config from './utils/config'
 import userRouter from './controllers/users/signup'
 import loginRouter from './controllers/users/login';
+import requestResetPasswordRouter from './controllers/users/requestPasswordReset';
+import middleware from './utils/middleware';
 mongoose.set('strictQuery',false)
 
 logger.info('connecting to',config.MONGODB_URI!)
@@ -22,10 +24,15 @@ mongoose
 app.use(cors());
 app.use(express.static('dist'));
 app.use(express.json());
+app.use(middleware.requestLogger);
 app.use("/api/signup",userRouter);
 app.use('/api/login',loginRouter);
+app.use('/api/request-reset',requestResetPasswordRouter);
 
 
+
+app.use(middleware.unknownEndpoint);
+// app.use(middleware.errorHandler);
 export default app;
 
 
