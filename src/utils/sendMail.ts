@@ -1,6 +1,6 @@
 import nodeMailer from 'nodemailer'
 import config from './config';
-const sendMail = async (email:string,subject:string,link:string)=> {
+const sendMail = async (email:string,subject:string,otp:string)=> {
     try {
         const transporter = nodeMailer.createTransport({
             host: config.HOST,
@@ -16,10 +16,10 @@ const sendMail = async (email:string,subject:string,link:string)=> {
         to: email,
         subject: subject,
         html: `
-              <h3>Password Reset Request</h3>
-              <p>You request a password reset. Click the link below to reset your password:</p>
-              <a href="${link}">Reset Password</a>
-              <p>If you didn't request this, please ignore this email.</p>
+            <h3>Password Reset Request</h3>
+            <p>Your OTP for password reset is: <strong>${otp}</strong></p>
+            <p>Please enter this OTP to reset your password.</p>
+            <p>If you didn't request this, please ignore this email.</p>
         `
        };
 

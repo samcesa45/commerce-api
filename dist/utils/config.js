@@ -11,11 +11,13 @@ const USER_NAME = process.env.USER_NAME;
 const USER_PASS = process.env.PASS;
 const HOST = process.env.HOST;
 const SENDER_EMAIL = process.env.SENDER_EMAIL;
+const JWT_SECRET = process.env.SECRET;
 exports.default = {
     PORT,
     MONGODB_URI,
     USER_NAME,
     USER_PASS,
     SENDER_EMAIL,
-    HOST
+    HOST,
+    JWT_SECRET
 };

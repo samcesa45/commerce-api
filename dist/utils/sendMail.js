@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const config_1 = __importDefault(require("./config"));
-const sendMail = (email, subject, link) => __awaiter(void 0, void 0, void 0, function* () {
+const sendMail = (email, subject, otp) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transporter = nodemailer_1.default.createTransport({
             host: config_1.default.HOST,
@@ -29,10 +29,10 @@ const sendMail = (email, subject, link) => __awaiter(void 0, void 0, void 0, fun
             to: email,
             subject: subject,
             html: `
-              <h3>Password Reset Request</h3>
-              <p>You request a password reset. Click the link below to reset your password:</p>
-              <a href="${link}">Reset Password</a>
-              <p>If you didn't request this, please ignore this email.</p>
+            <h3>Password Reset Request</h3>
+            <p>Your OTP for password reset is: <strong>${otp}</strong></p>
+            <p>Please enter this OTP to reset your password.</p>
+            <p>If you didn't request this, please ignore this email.</p>
         `
         };
         yield transporter.sendMail(mailOptions);

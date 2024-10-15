@@ -5,23 +5,28 @@ import User from '../../models/user';
 const resetPasswordRouter = express.Router();
 
 resetPasswordRouter.post('/', async (req: Request, res: any) => {
-    const { token } = req.params;
-    const { newPassword } = req.body;
+    const { email, newPassword } = req.body;
 
-    const resetEntry = await PasswordReset.findOne({ token, createdAt: { $gt: Date.now() }})
-    .populate('userId');
+    const user = await User.findOne({email});
 
-    if(!resetEntry) {
-        return res.status(400).json({error:'Invalid or expired token'});
+    if(!user) {
+        return res.status(404).json({error: "User not found"});
     }
 
+    const resetEntry = await PasswordReset.findOne({userId:user._id, expiresAt: {$gt: Date.now()}});
+
+    if(!resetEntry) {
+        return res.status(400).json({error:"Invalid email or otp"});
+    }
     //Hash the new password and save it to the User collection
-    const hashedPassword = await bcrypt.hash( newPassword, process.env.SALT_ROUNDS!);
+    const hashedPassword = await bcrypt.hash( newPassword, parseInt(process.env.SALT_ROUNDS!));
 
-    await User.findByIdAndUpdate(resetEntry.userId._id, { passwordHash: hashedPassword});
+   user.passwordHash = hashedPassword;
+   await user.save();
 
-    //delete the reset token after it has been used
-    await PasswordReset.deleteOne({_id: resetEntry._id});
+   await PasswordReset.deleteOne({_id:resetEntry._id});
 
     res.status(200).json({message:'Password has been reset successfully'});
 });
+
+export default resetPasswordRouter

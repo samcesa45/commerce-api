@@ -14,6 +14,8 @@ const signup_1 = __importDefault(require("./controllers/users/signup"));
 const login_1 = __importDefault(require("./controllers/users/login"));
 const requestPasswordReset_1 = __importDefault(require("./controllers/users/requestPasswordReset"));
 const middleware_1 = __importDefault(require("./utils/middleware"));
+const verifyOtp_1 = __importDefault(require("./controllers/users/verifyOtp"));
+const resetPassword_1 = __importDefault(require("./controllers/users/resetPassword"));
 mongoose_1.default.set('strictQuery', false);
 logger_1.default.info('connecting to', config_1.default.MONGODB_URI);
 mongoose_1.default
@@ -31,6 +33,8 @@ app.use(middleware_1.default.requestLogger);
 app.use("/api/signup", signup_1.default);
 app.use('/api/login', login_1.default);
 app.use('/api/request-reset', requestPasswordReset_1.default);
+app.use('/api/verify-otp', verifyOtp_1.default);
+app.use('/api/password-reset', resetPassword_1.default);
 app.use(middleware_1.default.unknownEndpoint);
-// app.use(middleware.errorHandler);
+app.use(middleware_1.default.errorHandler);
 exports.default = app;

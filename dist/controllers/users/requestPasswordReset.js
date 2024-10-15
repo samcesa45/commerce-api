@@ -16,7 +16,7 @@ const forgotPassword_1 = __importDefault(require("../../models/forgotPassword"))
 const express_1 = __importDefault(require("express"));
 const sendMail_1 = __importDefault(require("../../utils/sendMail"));
 const user_1 = __importDefault(require("../../models/user"));
-const crypto_1 = __importDefault(require("crypto"));
+const generateRandNumber_1 = require("../../utils/generateRandNumber");
 const requestResetPasswordRouter = express_1.default.Router();
 requestResetPasswordRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
@@ -24,17 +24,16 @@ requestResetPasswordRouter.post('/', (req, res) => __awaiter(void 0, void 0, voi
     if (!user) {
         return res.status(400).json({ error: "User not found" });
     }
-    //Generate a reset token
-    const resetToken = crypto_1.default.randomBytes(32).toString('hex');
-    const resetTokenExpiry = Date.now() + 3600;
+    //Generate otp
+    const otp = (0, generateRandNumber_1.generateResetCode)().toString();
+    const otpExpiry = Date.now() + 3600000;
     const passwordToken = yield forgotPassword_1.default.create({
         userId: user._id,
-        token: resetToken,
-        createdAt: resetTokenExpiry
+        otp: otp,
+        expiresAt: otpExpiry
     });
     yield passwordToken.save();
-    const link = `${process.env.BASE_URL}/api/request-reset/${passwordToken.userId}/${passwordToken.token}`;
-    yield (0, sendMail_1.default)(user.email, "Password Reset", link);
+    yield (0, sendMail_1.default)(user.email, "Password Reset Otp", otp);
     res.status(200).json({ message: "Password reset link sent to your email account" });
 }));
 exports.default = requestResetPasswordRouter;

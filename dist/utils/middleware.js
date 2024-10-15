@@ -36,5 +36,5 @@ const errorHandler = (error, req, res, next) => {
 exports.default = {
     requestLogger,
     unknownEndpoint,
-    errorHandler
+    errorHandler,
 };

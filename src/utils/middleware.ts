@@ -1,5 +1,6 @@
-import {Request, Response, NextFunction} from 'express'
+import {Request, Response, NextFunction, response} from 'express'
 import logger from './logger'
+
 
 
 const requestLogger=(req:Request, res:Response,next:NextFunction)=> {
@@ -15,7 +16,7 @@ const unknownEndpoint= (req: Request, res: Response) => {
 }
 
 const errorHandler = (
-    error: any, 
+    error: Error, 
     req: Request, 
     res:Response,
     next:NextFunction
@@ -39,8 +40,10 @@ const errorHandler = (
     next(error);
 };
 
+
+
 export default {
     requestLogger,
     unknownEndpoint,
-    errorHandler
+    errorHandler,
 };

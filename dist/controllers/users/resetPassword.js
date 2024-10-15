@@ -18,17 +18,20 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_1 = __importDefault(require("../../models/user"));
 const resetPasswordRouter = express_1.default.Router();
 resetPasswordRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { token } = req.params;
-    const { newPassword } = req.body;
-    const resetEntry = yield forgotPassword_1.default.findOne({ token, createdAt: { $gt: Date.now() } })
-        .populate('userId');
+    const { email, newPassword } = req.body;
+    const user = yield user_1.default.findOne({ email });
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    const resetEntry = yield forgotPassword_1.default.findOne({ userId: user._id, expiresAt: { $gt: Date.now() } });
     if (!resetEntry) {
-        return res.status(400).json({ error: 'Invalid or expired token' });
+        return res.status(400).json({ error: "Invalid email or otp" });
     }
     //Hash the new password and save it to the User collection
-    const hashedPassword = yield bcrypt_1.default.hash(newPassword, process.env.SALT_ROUNDS);
-    yield user_1.default.findByIdAndUpdate(resetEntry.userId._id, { passwordHash: hashedPassword });
-    //delete the reset token after it has been used
+    const hashedPassword = yield bcrypt_1.default.hash(newPassword, parseInt(process.env.SALT_ROUNDS));
+    user.passwordHash = hashedPassword;
+    yield user.save();
     yield forgotPassword_1.default.deleteOne({ _id: resetEntry._id });
     res.status(200).json({ message: 'Password has been reset successfully' });
 }));
+exports.default = resetPasswordRouter;
